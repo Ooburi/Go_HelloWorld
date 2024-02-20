@@ -1,18 +1,24 @@
 package main
- 
+
 import "fmt"
- 
+
 func main() {
 	defer fmt.Println("Bye!")
 
-	for ;true; {
+	for true {
 		fmt.Println("Select operation:")
 		fmt.Println("1) A + B")
 		fmt.Println("2) A - B")
 		fmt.Println("3) A * B")
 		fmt.Println("4) A / B")
 
-		switch InputNumber() {
+		operationNumber, err := InputNumber()
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		switch operationNumber {
 		case 1:
 			DoOperation(Add)
 		case 2:
@@ -22,36 +28,61 @@ func main() {
 		case 4:
 			DoOperation(Divide)
 		default:
-			continue;
+			continue
 		}
 	}
 }
 
-func DoOperation(operation func(int, int) int){
+func DoOperation(operation func(int, int) int) {
 	fmt.Println("Input A")
-	a:=InputNumber()
-	fmt.Println("Input B")
-	b:=InputNumber()
-	fmt.Printf("Result: %d \n",operation(a,b))
-}
-func InputNumber() int{
-	var a int;
-	a, err := fmt.Scan(&a)
-	if err!=nil{
-		return InputNumber()
-	} else {
-		return a;
+	a, err := InputNumber()
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
+
+	fmt.Println("Input B")
+	b, err := InputNumber()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Printf("Result = %d \n\n", operation(a, b))
 }
-func Add(a int, b int) int{
-	return a+b
+
+func InputNumber() (int, error) {
+	var a int
+	_, err := fmt.Scan(&a)
+	if err != nil {
+		return 0, err
+	}
+	return a, nil
 }
-func Subtract(a int, b int) int{
-	return a-b
+
+// func InputNumber() int{
+// 	var a int;
+// 	a, err := fmt.Scan(&a)
+// 	if err!=nil{
+// 		return InputNumber()
+// 	} else {
+// 		return a;
+// 	}
+// }
+
+func Add(a int, b int) int {
+	return a + b
 }
-func Multiply(a int, b int) int{
-	return a*b
+func Subtract(a int, b int) int {
+	return a - b
 }
-func Divide(a int, b int) int{
-	return a/b
+func Multiply(a int, b int) int {
+	return a * b
+}
+func Divide(a int, b int) int {
+	if b == 0 {
+		fmt.Println("Divide by zero error!")
+		return 0
+	}
+	return a / b
 }
